@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequestMapping("api/customers")
 public class CustomerController{
-
     private final CustomerService customerService;
 
     @PostMapping

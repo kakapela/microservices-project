@@ -11,4 +11,8 @@ public class CustomExceptionHandler {
     public ResponseEntity<String> emailAlreadyTakenException(EmailAlreadyTakenException exception){
         return ResponseEntity.badRequest().body(exception.getMessage());
     }
+    @ExceptionHandler(CustomerIsAFraudsterException.class)
+    public ResponseEntity<String> customerIsAFraudsterException(CustomerIsAFraudsterException exception){
+        return ResponseEntity.badRequest().body(exception.getMessage());
+    }
 }
