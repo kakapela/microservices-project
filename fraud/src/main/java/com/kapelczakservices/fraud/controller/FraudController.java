@@ -1,6 +1,6 @@
 package com.kapelczakservices.fraud.controller;
 
-import com.kapelczakservices.fraud.dto.FraudCheckResponse;
+import com.kapelczakservices.clients.fraud.FraudCheckResponse;
 import com.kapelczakservices.fraud.service.FraudCheckService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,13 +1,13 @@
 package com.kapelczakservices.customer.service;
 
+import com.kapelczakservices.clients.fraud.FraudCheckResponse;
+import com.kapelczakservices.clients.fraud.FraudClient;
 import com.kapelczakservices.customer.dto.CustomerRegistrationRequest;
-import com.kapelczakservices.customer.dto.FraudCheckResponse;
 import com.kapelczakservices.customer.exception.CustomerIsAFraudsterException;
 import com.kapelczakservices.customer.exception.EmailAlreadyTakenException;
 import com.kapelczakservices.customer.model.Customer;
 import com.kapelczakservices.customer.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,8 +20,9 @@ import static java.lang.String.format;
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final RestTemplate restTemplate;
+    private final FraudClient fraudClient;
 
-    public void registerCustomer(CustomerRegistrationRequest customerRegistrationRequest){
+    public void registerCustomer(CustomerRegistrationRequest customerRegistrationRequest) {
         Customer customer = Customer.builder()
                 .firstName(customerRegistrationRequest.firstName())
                 .lastName(customerRegistrationRequest.lastName())
@@ -35,13 +36,8 @@ public class CustomerService {
             throw new EmailAlreadyTakenException(format("Customer with email %s already exists!", customerRegistrationRequest.email()));
 
         customerRepository.saveAndFlush(customer);
-        // todo check if fraudster
-        FraudCheckResponse response = restTemplate.getForObject(
-                "http://FRAUD/api/fraud-check/{customerId}",
-                FraudCheckResponse.class,
-                customer.getId()
-        );
-        if(response.isFraudster()) {
+        FraudCheckResponse response = fraudClient.isFraudster(customer.getId());
+        if (response.isFraudster()) {
             throw new CustomerIsAFraudsterException(String.format("Customer with id %s is a Fraudster!", customer.getId()));
         }
         // todo send notification
